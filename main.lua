@@ -6,10 +6,8 @@ function love.load()
   warshipLocation = {
     x = 250,
     y = 250,
-    targetX = 250,
-    targetY = 250,
     moving = false,
-    speed = 50
+    radians = 0
   }
 end
 
@@ -19,7 +17,7 @@ end
 
 function love.draw()
   love.graphics.setBackgroundColor(backgroundColor[1], backgroundColor[2], backgroundColor[3])
-  love.graphics.draw(warship, warshipLocation.x - 16, warshipLocation.y - 16)
+  love.graphics.draw(warship, warshipLocation.x, warshipLocation.y, warshipLocation.radians, 1, 1, 16, 16)
 end
 
 function love.mousepressed(x, y, button, isTouch)
@@ -27,8 +25,12 @@ function love.mousepressed(x, y, button, isTouch)
     warshipLocation.moving = false
   end
 
+  local function calculateRadians(x, y)
+    return math.atan2(warshipLocation.y - y, warshipLocation.x - x) - (math.pi / 2)
+  end
+
   if not warshipLocation.moving then
-    flux.to(warshipLocation, 5, {x = x, y = y}):oncomplete(warshipMoveFinished)
+    flux.to(warshipLocation, 2, {radians = calculateRadians(x, y)}):after(warshipLocation, 5, {x = x, y = y}):oncomplete(warshipMoveFinished)
 
     warshipLocation.moving = true
   end
