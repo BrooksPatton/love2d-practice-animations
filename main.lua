@@ -1,3 +1,5 @@
+flux = require 'flux'
+
 function love.load()
   backgroundColor = {58, 154, 187}
   warship = love.graphics.newImage('warship.png')
@@ -12,28 +14,7 @@ function love.load()
 end
 
 function love.update(dt)
-  if warshipLocation.moving then
-    local xDiff = warshipLocation.x - warshipLocation.targetX
-    local yDiff = warshipLocation.y - warshipLocation.targetY
-
-    if math.abs(xDiff) < 1 and math.abs(yDiff) < 1 then
-      warshipLocation.x = warshipLocation.targetX
-      warshipLocation.y = warshipLocation.targetY
-      warshipLocation.moving = false
-    else
-      if xDiff < 0 then
-        warshipLocation.x = warshipLocation.x + warshipLocation.speed * dt
-      else
-        warshipLocation.x = warshipLocation.x - warshipLocation.speed * dt
-      end
-
-      if yDiff < 0 then
-        warshipLocation.y = warshipLocation.y + warshipLocation.speed * dt
-      else
-        warshipLocation.y = warshipLocation.y - warshipLocation.speed * dt
-      end
-    end
-  end
+  local f = flux.update(dt)
 end
 
 function love.draw()
@@ -42,9 +23,13 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button, isTouch)
+  local function warshipMoveFinished()
+    warshipLocation.moving = false
+  end
+
   if not warshipLocation.moving then
-    warshipLocation.targetX = x
-    warshipLocation.targetY = y
+    flux.to(warshipLocation, 5, {x = x, y = y}):oncomplete(warshipMoveFinished)
+
     warshipLocation.moving = true
   end
 end
