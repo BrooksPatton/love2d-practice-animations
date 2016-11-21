@@ -7,7 +7,8 @@ function love.load()
     x = 250,
     y = 250,
     moving = false,
-    radians = 0
+    radians = 0,
+    travelRadius = 100
   }
 end
 
@@ -16,8 +17,13 @@ function love.update(dt)
 end
 
 function love.draw()
+  love.graphics.setColor(224, 104, 90)
+  love.graphics.circle('line', warshipLocation.x, warshipLocation.y, warshipLocation.travelRadius)
+
+  love.graphics.setColor(255, 255, 255)
   love.graphics.setBackgroundColor(backgroundColor[1], backgroundColor[2], backgroundColor[3])
   love.graphics.draw(warship, warshipLocation.x, warshipLocation.y, warshipLocation.radians, 1, 1, 16, 16)
+
 end
 
 function love.mousepressed(x, y, button, isTouch)
