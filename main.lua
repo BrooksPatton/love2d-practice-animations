@@ -26,17 +26,25 @@ function love.draw()
 
 end
 
+function warshipMoveFinished()
+  warshipLocation.moving = false
+end
+
+function calculateRadians(x, y)
+  return math.atan2(warshipLocation.y - y, warshipLocation.x - x) - (math.pi / 2)
+end
+
+function isClickedWithinCircle(x, y)
+  local lineA = math.abs(warshipLocation.x - x)
+  local lineB = math.abs(warshipLocation.y - y)
+  local distanceFromShip = math.sqrt((lineA * lineA) + (lineB * lineB))
+
+  return warshipLocation.travelRadius - distanceFromShip > 0
+end
+
 function love.mousepressed(x, y, button, isTouch)
-  local function warshipMoveFinished()
-    warshipLocation.moving = false
-  end
-
-  local function calculateRadians(x, y)
-    return math.atan2(warshipLocation.y - y, warshipLocation.x - x) - (math.pi / 2)
-  end
-
-  if not warshipLocation.moving then
-    flux.to(warshipLocation, 2, {radians = calculateRadians(x, y)}):after(warshipLocation, 5, {x = x, y = y}):oncomplete(warshipMoveFinished)
+  if not warshipLocation.moving and isClickedWithinCircle(x, y) then
+    flux.to(warshipLocation, 0.5, {radians = calculateRadians(x, y)}):after(warshipLocation, 2, {x = x, y = y}):oncomplete(warshipMoveFinished)
 
     warshipLocation.moving = true
   end
